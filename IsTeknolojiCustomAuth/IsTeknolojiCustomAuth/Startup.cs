@@ -10,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
 
 namespace IsTeknolojiCustomAuth
 {
@@ -27,13 +26,6 @@ namespace IsTeknolojiCustomAuth
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            var tokenKey = Configuration.GetValue<string>("TokenKey");
-            var key = Encoding.ASCII.GetBytes(tokenKey);
-
-            services.AddAuthentication("Basic")
-                .AddScheme<BasicAuthenticationOptions, CustomAuthenticationHandler>("Basic", null);
-
-            services.AddSingleton<ICustomAuthenticationManager, CustomAuthenticationManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,8 +34,6 @@ namespace IsTeknolojiCustomAuth
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "IsTeknolojiCustomAuth v1"));
             }
 
             app.UseHttpsRedirection();
