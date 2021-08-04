@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using IsTeknolojiCustomAuth.Models;
+using IsTeknolojiCustomAuth.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -26,10 +29,17 @@ namespace IsTeknolojiCustomAuth
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            var tokenKey = Configuration.GetValue<string>("TokenKey");
+            var key = Encoding.ASCII.GetBytes(tokenKey);
+
+            services.AddAuthentication("Basic")
+                .AddScheme<BasicAuthenticationOptions, CustomAuthenticationHandler>("Basic", null);
+
+            services.AddSingleton<ICustomAuthenticationManager, CustomAuthenticationManager>();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -40,6 +50,7 @@ namespace IsTeknolojiCustomAuth
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
